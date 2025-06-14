@@ -10,7 +10,9 @@ on:
         options:
           - authentication
           - routing
-
+permissions:
+  contents: write
+  
 jobs:
   extract-agent:
     runs-on: ubuntu-latest
