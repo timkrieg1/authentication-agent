@@ -5,42 +5,47 @@ import string
 from datetime import datetime
 import subprocess
 import sys
+import shutil
 
-# Get CLI argument
+# --- Parse CLI argument ---
 use_case = sys.argv[sys.argv.index("--use-case") + 1]
 timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
 branch_name = f"{use_case}_{timestamp}"
+agent_folder = "agent"
 
-# File setup
-folder = "output"
-os.makedirs(folder, exist_ok=True)
-filename = f"{folder}/{use_case}_{timestamp}.json"
-
-# Create dummy data
+# --- Generate dummy agent export data ---
 data = {
     "use_case": use_case,
-    "payload": ''.join(random.choices(string.ascii_letters + string.digits, k=32))
+    "export_id": ''.join(random.choices(string.ascii_letters + string.digits, k=10)),
+    "timestamp": timestamp
 }
 
-# Write the file
+# --- Clean existing agent folder if it exists ---
+if os.path.exists(agent_folder):
+    shutil.rmtree(agent_folder)
+os.makedirs(agent_folder, exist_ok=True)
+
+filename = f"{agent_folder}/export.json"
 with open(filename, "w") as f:
     json.dump(data, f, indent=2)
-print(f"Created file: {filename}")
+print(f"✅ Export written to {filename}")
 
-# Git config
+# --- Git config ---
 subprocess.run(["git", "config", "--global", "user.email", "actions@github.com"], check=True)
 subprocess.run(["git", "config", "--global", "user.name", "github-actions"], check=True)
 
-# Create orphan branch (no history)
-subprocess.run(["git", "checkout", "--orphan", branch_name], check=True)
-subprocess.run(["git", "rm", "-rf", "."], check=False)  # ignore errors if repo is already empty
+# --- Ensure we are on main and up to date ---
+subprocess.run(["git", "checkout", "main"], check=True)
+subprocess.run(["git", "pull", "origin", "main"], check=True)
 
-# Move the file to root for clean branch (optional)
-os.rename(filename, f"{use_case}_{timestamp}.json")
+# --- Create new branch from main ---
+subprocess.run(["git", "checkout", "-b", branch_name], check=True)
 
-# Commit and push
-subprocess.run(["git", "add", f"{use_case}_{timestamp}.json"], check=True)
-subprocess.run(["git", "commit", "-m", f"Add extracted agent for {use_case}"], check=True)
+# --- Stage and commit new agent export ---
+subprocess.run(["git", "add", agent_folder], check=True)
+subprocess.run(["git", "commit", "-m", f"Update agent export for {use_case}"], check=True)
+
+# --- Push the new branch ---
 subprocess.run(["git", "push", "-u", "origin", branch_name], check=True)
 
-print(f"🚀 Pushed new orphan branch: {branch_name}")
+print(f"🚀 New branch created and pushed: {branch_name}")
