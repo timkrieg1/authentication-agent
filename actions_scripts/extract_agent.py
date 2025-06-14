@@ -18,10 +18,14 @@ def create_random_json_file():
 
     os.makedirs("output", exist_ok=True)
     filename = f"output/random_data_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
-    with open(filename, "w") as f:
-        json.dump(data, f, indent=2)
+    try:
+        with open(filename, "w") as f:
+            json.dump(data, f, indent=2)
+            print(f"Created file: {filename}")
 
-    print(f"Created file: {filename}")
+    except Exception as e:
+        print("❌ Failed to create file:", e)
 
+    print("Current workign directory:", os.getcwd())
 if __name__ == "__main__":
     create_random_json_file()
