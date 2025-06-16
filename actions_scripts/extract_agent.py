@@ -15,14 +15,15 @@ def downloadSnapshot():
         raise Exception("Not 200")
     
     downloadLink = json.loads(r.content)["downloadLink"]
-
+    print(downloadLink)
     #Download
     r = requests.get(downloadLink, stream=True)
 
     if r.status_code == 200:
-        with open("snapshots/snapshot_name1.csnap", "wb") as file:
+        with open("agent/snapshots/snapshot_name1.csnap", "wb") as file:
             for chunk in r.iter_content(chunk_size=8192):
                 file.write(chunk)
         print("Snapshot download complete")
     else:
         print("Snapshot download failed")
+        print(r.status_code)
