@@ -17,7 +17,7 @@ def downloadSnapshot():
     downloadLink = json.loads(r.content)["downloadLink"]
     print(downloadLink)
     #Download
-    r = requests.get(downloadLink, stream=True)
+    r = requests.get(downloadLink, stream=True, headers=headers)
 
     if r.status_code == 200:
         with open("agent/snapshots/snapshot_name1.csnap", "wb") as file:
