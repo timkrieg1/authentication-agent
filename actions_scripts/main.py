@@ -6,7 +6,7 @@ from datetime import datetime
 import subprocess
 import sys
 import shutil
-from extract_agent import sayHi
+from extract_agent import downloadSnapshot
 
 # --- Parse CLI argument ---
 use_case = sys.argv[sys.argv.index("--use-case") + 1]
@@ -27,6 +27,8 @@ if os.path.exists(agent_folder):
 os.makedirs("agent", exist_ok=True)
 os.makedirs("agent/flows", exist_ok=True)
 os.makedirs("agent/connections", exist_ok=True)
+os.makedirs("agent/snapshots", exist_ok=True)
+downloadSnapshot()
 
 filenames = ["agent/flows/flow1.json", "agent/connections/conncetion1.json"]
 
@@ -34,7 +36,8 @@ for file in filenames:
     with open(file, "w") as f:
         json.dump(data, f, indent=2)
     print(f"✅ Export written to {file}")
-sayHi()
+
+
 # --- Git config ---
 subprocess.run(["git", "config", "--global", "user.email", "actions@github.com"], check=True)
 subprocess.run(["git", "config", "--global", "user.name", "github-actions"], check=True)
