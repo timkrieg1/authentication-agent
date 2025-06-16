@@ -34,4 +34,4 @@ jobs:
         env:
           USE_CASE: ${{ github.event.inputs.useCase }}
         run: |
-          python actions_scripts/extract_agent.py --use-case "$USE_CASE"
+          python actions_scripts/main.py --use-case "$USE_CASE"
