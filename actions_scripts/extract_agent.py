@@ -23,12 +23,16 @@ data = {
 # --- Clean existing agent folder if it exists ---
 if os.path.exists(agent_folder):
     shutil.rmtree(agent_folder)
-os.makedirs(agent_folder, exist_ok=True)
+os.makedirs("agent", exist_ok=True)
+os.makedirs("agent/flows", exist_ok=True)
+os.makedirs("agent/connections", exist_ok=True)
 
-filename = f"{agent_folder}/export.json"
-with open(filename, "w") as f:
-    json.dump(data, f, indent=2)
-print(f"✅ Export written to {filename}")
+filenames = ["agent/flows/flow1.json", "agent/connections/conncetion1.json"]
+
+for file in filenames:
+    with open(file, "w") as f:
+        json.dump(data, f, indent=2)
+    print(f"✅ Export written to {file}")
 
 # --- Git config ---
 subprocess.run(["git", "config", "--global", "user.email", "actions@github.com"], check=True)
